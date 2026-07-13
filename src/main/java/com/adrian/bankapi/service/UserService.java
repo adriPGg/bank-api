@@ -49,10 +49,20 @@ public class UserService {
 
     public LoginResponse login(LoginRequest request) {
 
+        System.out.println("=== ENTRANDO EN LOGIN ===");
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("Credenciales incorrectas"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        System.out.println("Email recibido: " + request.getEmail());
+        System.out.println("Password introducida: " + request.getPassword());
+        System.out.println("Password BD: " + user.getPassword());
+
+        boolean matches = passwordEncoder.matches(request.getPassword(), user.getPassword());
+
+        System.out.println("¿Coinciden?: " + matches);
+
+        if (!matches) {
             throw new UserNotFoundException("Credenciales incorrectas");
         }
 

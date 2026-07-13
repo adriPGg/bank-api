@@ -1,4 +1,4 @@
-package com.adrian.bankapi.Config;
+package com.adrian.bankapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
