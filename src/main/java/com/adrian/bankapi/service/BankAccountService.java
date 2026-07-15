@@ -5,6 +5,10 @@ import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.adrian.bankapi.entity.Transaction;
+import com.adrian.bankapi.entity.TransactionType;
+import com.adrian.bankapi.repository.TransactionRepository;
+
 import com.adrian.bankapi.dto.BankAccountRequest;
 import com.adrian.bankapi.dto.BankAccountResponse;
 
@@ -29,13 +33,17 @@ import java.util.Random;
 public class BankAccountService {
 
     private final BankAccountRepository bankAccountRepository;
+    private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
 
+
     public BankAccountService(BankAccountRepository bankAccountRepository,
-                              UserRepository userRepository) {
+                              UserRepository userRepository,
+                              TransactionRepository transactionRepository) {
 
         this.bankAccountRepository = bankAccountRepository;
         this.userRepository = userRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     public BankAccountResponse getAccountById(Long id, String email) {
@@ -76,6 +84,15 @@ public class BankAccountService {
         );
 
         BankAccount savedAccount = bankAccountRepository.save(account);
+        Transaction transaction = new Transaction();
+
+        transaction.setFromAccount(account);
+        transaction.setToAccount(null);
+        transaction.setAmount(request.getAmount());
+        transaction.setTransactionType(TransactionType.DEPOSIT);
+        transaction.setCreatedAt(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
 
         return mapToResponse(savedAccount);
     }
@@ -109,6 +126,16 @@ public class BankAccountService {
 
         BankAccount savedAccount = bankAccountRepository.save(account);
 
+        Transaction transaction = new Transaction();
+
+        transaction.setFromAccount(account);
+        transaction.setToAccount(null);
+        transaction.setAmount(request.getAmount());
+        transaction.setTransactionType(TransactionType.WITHDRAW);
+        transaction.setCreatedAt(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
+
         return mapToResponse(savedAccount);
 
     }
@@ -124,6 +151,7 @@ public class BankAccountService {
                 .map(this::mapToResponse)
                 .toList();
     }
+
     public BankAccountResponse createAccount(
             BankAccountRequest request,
             String email) {
@@ -142,6 +170,7 @@ public class BankAccountService {
 
         return mapToResponse(savedAccount);
     }
+
     private String generateIban() {
 
         Random random = new Random();
@@ -156,6 +185,7 @@ public class BankAccountService {
 
         return iban.toString();
     }
+
     private BankAccountResponse mapToResponse(BankAccount account) {
 
         BankAccountResponse response = new BankAccountResponse();

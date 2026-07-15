@@ -39,7 +39,7 @@ public class TransferController {
             Authentication authentication) {
 
         System.out.println("=== ENTRANDO EN GET TRANSACTIONS ===");
-        
+
         String email = authentication.getName();
 
         return transferService.getTransactions(id, email);
