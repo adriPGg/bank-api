@@ -40,4 +40,26 @@ public class GlobalExceptionHandler {
 
         return error;
     }
+
+    @ExceptionHandler(BankAccountNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleBankAccountNotFound(
+            BankAccountNotFoundException ex) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+
+        return error;
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleInsufficientBalance(
+            InsufficientBalanceException ex) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+
+        return error;
+    }
 }
