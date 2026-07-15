@@ -1,5 +1,6 @@
 package com.adrian.bankapi.controller;
 
+import com.adrian.bankapi.entity.TransactionType;
 import com.adrian.bankapi.dto.TransferRequest;
 import com.adrian.bankapi.service.TransferService;
 import jakarta.validation.Valid;
@@ -7,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.adrian.bankapi.dto.TransferResponse;
 import org.springframework.data.domain.Page;
-import java.util.List;
 
 import com.adrian.bankapi.dto.TransactionResponse;
 
@@ -36,12 +36,17 @@ public class TransferController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) TransactionType type,
             Authentication authentication) {
-
-        System.out.println("=== ENTRANDO EN GET TRANSACTIONS ===");
 
         String email = authentication.getName();
 
-        return transferService.getTransactions(id, email, page, size);
+        return transferService.getTransactions(
+                id,
+                email,
+                page,
+                size,
+                type
+        );
     }
 }

@@ -99,7 +99,8 @@ public class TransferService {
             Long accountId,
             String email,
             int page,
-            int size) {
+            int size,
+            TransactionType type) {
 
         Pageable pageable = PageRequest.of(
                 page,
@@ -119,12 +120,27 @@ public class TransferService {
                     "No tienes acceso a esta cuenta");
         }
 
-        Page<Transaction> transactionPage =
-                transactionRepository.findByFromAccountOrToAccount(
-                        account,
-                        account,
-                        pageable
-                );
+        Page<Transaction> transactionPage;
+
+        if (type == null) {
+
+            transactionPage = transactionRepository.findByFromAccountOrToAccount(
+                    account,
+                    account,
+                    pageable
+            );
+
+        } else {
+
+            transactionPage = transactionRepository
+                    .findByTransactionTypeAndFromAccountOrTransactionTypeAndToAccount(
+                            type,
+                            account,
+                            type,
+                            account,
+                            pageable
+                    );
+        }
 
         return transactionPage.map(transaction -> {
 
