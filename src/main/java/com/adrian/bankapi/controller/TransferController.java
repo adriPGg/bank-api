@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.adrian.bankapi.dto.TransferResponse;
-
+import org.springframework.data.domain.Page;
 import java.util.List;
 
 import com.adrian.bankapi.dto.TransactionResponse;
@@ -28,20 +28,20 @@ public class TransferController {
 
         String email = authentication.getName();
 
-        transferService.transfer(request, email);
-
         return transferService.transfer(request, email);
     }
 
     @GetMapping("/accounts/{id}/transactions")
-    public List<TransactionResponse> getTransactions(
+    public Page<TransactionResponse> getTransactions(
             @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             Authentication authentication) {
 
         System.out.println("=== ENTRANDO EN GET TRANSACTIONS ===");
 
         String email = authentication.getName();
 
-        return transferService.getTransactions(id, email);
+        return transferService.getTransactions(id, email, page, size);
     }
 }

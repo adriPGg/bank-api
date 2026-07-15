@@ -19,9 +19,10 @@ import com.adrian.bankapi.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import com.adrian.bankapi.repository.TransactionRepository;
 
-import java.util.List;
-import java.util.ArrayList;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import com.adrian.bankapi.dto.TransactionResponse;
 
 
@@ -94,10 +95,17 @@ public class TransferService {
         return new TransferResponse("Transferencia realizada correctamente");
     }
 
-    public List<TransactionResponse> getTransactions(
+    public Page<TransactionResponse> getTransactions(
             Long accountId,
-            String email) {
+            String email,
+            int page,
+            int size) {
 
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("createdAt").descending()
+        );
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UserNotFoundException("Usuario no encontrado"));
@@ -111,15 +119,14 @@ public class TransferService {
                     "No tienes acceso a esta cuenta");
         }
 
-        List<Transaction> transactions =
+        Page<Transaction> transactionPage =
                 transactionRepository.findByFromAccountOrToAccount(
                         account,
-                        account
+                        account,
+                        pageable
                 );
 
-        List<TransactionResponse> response = new ArrayList<>();
-
-        for (Transaction transaction : transactions) {
+        return transactionPage.map(transaction -> {
 
             TransactionResponse dto = new TransactionResponse();
 
@@ -129,21 +136,15 @@ public class TransferService {
             dto.setCreatedAt(transaction.getCreatedAt());
 
             if (transaction.getFromAccount() != null) {
-                dto.setFromAccountId(
-                        transaction.getFromAccount().getId()
-                );
+                dto.setFromAccountId(transaction.getFromAccount().getId());
             }
 
             if (transaction.getToAccount() != null) {
-                dto.setToAccountId(
-                        transaction.getToAccount().getId()
-                );
+                dto.setToAccountId(transaction.getToAccount().getId());
             }
 
-            response.add(dto);
-        }
-
-        return response;
+            return dto;
+        });
     }
 
 }
