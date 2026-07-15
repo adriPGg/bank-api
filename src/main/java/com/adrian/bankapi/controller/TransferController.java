@@ -1,0 +1,47 @@
+package com.adrian.bankapi.controller;
+
+import com.adrian.bankapi.dto.TransferRequest;
+import com.adrian.bankapi.service.TransferService;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import com.adrian.bankapi.dto.TransferResponse;
+
+import java.util.List;
+
+import com.adrian.bankapi.dto.TransactionResponse;
+
+@RestController
+@RequestMapping("/transfers")
+public class TransferController {
+
+    private final TransferService transferService;
+
+    public TransferController(TransferService transferService) {
+        this.transferService = transferService;
+    }
+
+    @PostMapping
+    public TransferResponse transfer(
+            @Valid @RequestBody TransferRequest request,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+
+        transferService.transfer(request, email);
+
+        return transferService.transfer(request, email);
+    }
+
+    @GetMapping("/accounts/{id}/transactions")
+    public List<TransactionResponse> getTransactions(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        System.out.println("=== ENTRANDO EN GET TRANSACTIONS ===");
+        
+        String email = authentication.getName();
+
+        return transferService.getTransactions(id, email);
+    }
+}
