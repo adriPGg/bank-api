@@ -25,6 +25,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import com.adrian.bankapi.dto.TransactionResponse;
 
+import com.adrian.bankapi.specification.TransactionSpecification;
+import org.springframework.data.jpa.domain.Specification;
+
 
 @Service
 public class TransferService {
@@ -100,7 +103,11 @@ public class TransferService {
             String email,
             int page,
             int size,
-            TransactionType type) {
+            TransactionType type,
+            LocalDateTime from,
+            LocalDateTime to)
+
+    {
 
         Pageable pageable = PageRequest.of(
                 page,
@@ -120,27 +127,28 @@ public class TransferService {
                     "No tienes acceso a esta cuenta");
         }
 
-        Page<Transaction> transactionPage;
+        Specification<Transaction> specification =
+                TransactionSpecification.belongsToAccount(account);
 
-        if (type == null) {
-
-            transactionPage = transactionRepository.findByFromAccountOrToAccount(
-                    account,
-                    account,
-                    pageable
+        if (type != null) {
+            specification = specification.and(
+                    TransactionSpecification.hasType(type)
             );
-
-        } else {
-
-            transactionPage = transactionRepository
-                    .findByTransactionTypeAndFromAccountOrTransactionTypeAndToAccount(
-                            type,
-                            account,
-                            type,
-                            account,
-                            pageable
-                    );
         }
+        if (from != null) {
+            specification = specification.and(
+                    TransactionSpecification.fromDate(from)
+            );
+        }
+
+        if (to != null) {
+            specification = specification.and(
+                    TransactionSpecification.toDate(to)
+            );
+        }
+
+        Page<Transaction> transactionPage =
+                transactionRepository.findAll(specification, pageable);
 
         return transactionPage.map(transaction -> {
 
