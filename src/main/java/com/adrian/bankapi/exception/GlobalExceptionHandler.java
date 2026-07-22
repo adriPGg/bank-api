@@ -26,40 +26,43 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EmailAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
-
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-
-        return error;
+        return buildError(ex.getMessage());
     }
+
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleUserNotFound(UserNotFoundException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-
-        return error;
+        return buildError(ex.getMessage());
     }
 
     @ExceptionHandler(BankAccountNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleBankAccountNotFound(
             BankAccountNotFoundException ex) {
-
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-
-        return error;
+        return buildError(ex.getMessage());
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleInsufficientBalance(
             InsufficientBalanceException ex) {
+        return buildError(ex.getMessage());
+    }
+
+    private Map<String, String> buildError(String message) {
 
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put("error", message);
 
         return error;
     }
+
+    @ExceptionHandler(UnauthorizedAccountAccessException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> handleUnauthorizedAccountAccess(
+            UnauthorizedAccountAccessException ex) {
+
+        return buildError(ex.getMessage());
+    }
+
 }
