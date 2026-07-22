@@ -96,79 +96,7 @@ public class TransferService {
 
 
         return new TransferResponse("Transferencia realizada correctamente");
-    }
 
-    public Page<TransactionResponse> getTransactions(
-            Long accountId,
-            String email,
-            int page,
-            int size,
-            TransactionType type,
-            LocalDateTime from,
-            LocalDateTime to)
-
-    {
-
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("createdAt").descending()
-        );
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UserNotFoundException("Usuario no encontrado"));
-
-        BankAccount account = bankAccountRepository.findById(accountId)
-                .orElseThrow(() ->
-                        new BankAccountNotFoundException("Cuenta no encontrada"));
-
-        if (!account.getUser().getId().equals(user.getId())) {
-            throw new UnauthorizedAccountAccessException(
-                    "No tienes acceso a esta cuenta");
-        }
-
-        Specification<Transaction> specification =
-                TransactionSpecification.belongsToAccount(account);
-
-        if (type != null) {
-            specification = specification.and(
-                    TransactionSpecification.hasType(type)
-            );
-        }
-        if (from != null) {
-            specification = specification.and(
-                    TransactionSpecification.fromDate(from)
-            );
-        }
-
-        if (to != null) {
-            specification = specification.and(
-                    TransactionSpecification.toDate(to)
-            );
-        }
-
-        Page<Transaction> transactionPage =
-                transactionRepository.findAll(specification, pageable);
-
-        return transactionPage.map(transaction -> {
-
-            TransactionResponse dto = new TransactionResponse();
-
-            dto.setId(transaction.getId());
-            dto.setAmount(transaction.getAmount());
-            dto.setTransactionType(transaction.getTransactionType());
-            dto.setCreatedAt(transaction.getCreatedAt());
-
-            if (transaction.getFromAccount() != null) {
-                dto.setFromAccountId(transaction.getFromAccount().getId());
-            }
-
-            if (transaction.getToAccount() != null) {
-                dto.setToAccountId(transaction.getToAccount().getId());
-            }
-
-            return dto;
-        });
     }
 
 }

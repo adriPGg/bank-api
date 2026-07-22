@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -20,6 +21,11 @@ public interface TransactionRepository
             BankAccount toAccount,
             Pageable pageable);
 
+    Page<Transaction> findByFromAccountInOrToAccountIn(
+            List<BankAccount> fromAccounts,
+            List<BankAccount> toAccounts,
+            Pageable pageable);
+
     Page<Transaction> findByCreatedAtBetweenAndFromAccountOrCreatedAtBetweenAndToAccount(
             LocalDateTime fromDate1,
             LocalDateTime toDate1,
@@ -28,4 +34,12 @@ public interface TransactionRepository
             LocalDateTime toDate2,
             BankAccount toAccount,
             Pageable pageable);
+
+    Page<Transaction> findByTransactionTypeAndFromAccountInOrTransactionTypeAndToAccountIn(
+            TransactionType transactionType1,
+            List<BankAccount> fromAccounts,
+            TransactionType transactionType2,
+            List<BankAccount> toAccounts,
+            Pageable pageable);
+
 }
