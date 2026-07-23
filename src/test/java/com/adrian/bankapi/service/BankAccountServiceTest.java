@@ -138,7 +138,7 @@ class BankAccountServiceTest {
         DepositRequest request = new DepositRequest();
         request.setAmount(new BigDecimal("50"));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(userRepository.findByEmail(email))
@@ -181,7 +181,7 @@ class BankAccountServiceTest {
         DepositRequest request = new DepositRequest();
         request.setAmount(new BigDecimal("50"));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(userRepository.findByEmail(email))
@@ -216,7 +216,7 @@ class BankAccountServiceTest {
         WithdrawRequest request = new WithdrawRequest();
         request.setAmount(new BigDecimal("40"));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(userRepository.findByEmail(email))
@@ -251,7 +251,7 @@ class BankAccountServiceTest {
         WithdrawRequest request = new WithdrawRequest();
         request.setAmount(new BigDecimal("150"));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(userRepository.findByEmail(email))
@@ -289,7 +289,7 @@ class BankAccountServiceTest {
         WithdrawRequest request = new WithdrawRequest();
         request.setAmount(new BigDecimal("40"));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(userRepository.findByEmail(email))
@@ -324,7 +324,7 @@ class BankAccountServiceTest {
         account.setAccountType(AccountType.CHECKING);
         account.setCreatedAt(LocalDateTime.now());
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(userRepository.findByEmail(email))
@@ -339,7 +339,7 @@ class BankAccountServiceTest {
         assertEquals(new BigDecimal("250"), response.getBalance());
         assertEquals(AccountType.CHECKING, response.getAccountType());
 
-        verify(bankAccountRepository).findById(1L);
+        verify(bankAccountRepository).findByIdAndActiveTrue(1L);
         verify(userRepository).findByEmail(email);
     }
 
@@ -348,7 +348,7 @@ class BankAccountServiceTest {
 
         String email = "adrian@test.com";
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -371,7 +371,7 @@ class BankAccountServiceTest {
         account.setId(1L);
         account.setUser(owner);
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(userRepository.findByEmail(email))
@@ -399,7 +399,7 @@ class BankAccountServiceTest {
         account.setId(1L);
         account.setUser(owner);
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(userRepository.findByEmail(email))
@@ -437,7 +437,7 @@ class BankAccountServiceTest {
         when(userRepository.findByEmail(email))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findByUser(user))
+        when(bankAccountRepository.findByUserAndActiveTrue(user))
                 .thenReturn(List.of(account1, account2));
 
         List<BankAccountResponse> response =
@@ -446,7 +446,7 @@ class BankAccountServiceTest {
         assertEquals(2, response.size());
 
         verify(userRepository).findByEmail(email);
-        verify(bankAccountRepository).findByUser(user);
+        verify(bankAccountRepository).findByUserAndActiveTrue(user);
     }
 
     @Test
@@ -463,6 +463,6 @@ class BankAccountServiceTest {
         );
 
         verify(bankAccountRepository, never())
-                .findByUser(any(User.class));
+                .findByUserAndActiveTrue(any(User.class));
     }
 }

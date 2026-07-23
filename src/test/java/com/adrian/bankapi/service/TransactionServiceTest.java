@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,7 +89,7 @@ class TransactionServiceTest {
         when(userRepository.findByEmail("test@test.com"))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findByUser(user))
+        when(bankAccountRepository.findByUserAndActiveTrue(user))
                 .thenReturn(List.of(account));
 
         when(transactionRepository.findAll(
@@ -122,7 +123,7 @@ class TransactionServiceTest {
         when(userRepository.findByEmail("test@test.com"))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findByUser(user))
+        when(bankAccountRepository.findByUserAndActiveTrue(user))
                 .thenReturn(List.of(account));
 
         when(transactionRepository.findAll(
@@ -156,7 +157,7 @@ class TransactionServiceTest {
         when(userRepository.findByEmail("test@test.com"))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findByUser(user))
+        when(bankAccountRepository.findByUserAndActiveTrue(user))
                 .thenReturn(List.of(account));
 
         when(transactionRepository.findAll(
@@ -186,7 +187,7 @@ class TransactionServiceTest {
         when(userRepository.findByEmail("test@test.com"))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -218,7 +219,7 @@ class TransactionServiceTest {
         when(userRepository.findByEmail("test@test.com"))
                 .thenReturn(Optional.of(anotherUser));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         assertThrows(
@@ -251,7 +252,7 @@ class TransactionServiceTest {
         when(userRepository.findByEmail("test@test.com"))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(account));
 
         when(transactionRepository.findAll(
@@ -275,6 +276,45 @@ class TransactionServiceTest {
 
         assertEquals(1, result.getTotalElements());
         assertSame(response, result.getContent().getFirst());
+    }
+
+    @Test
+    void getTransactions_ShouldFilterByDates() {
+
+        User user = new User();
+        user.setId(1L);
+
+        BankAccount account = new BankAccount();
+        account.setUser(user);
+
+        LocalDateTime from = LocalDateTime.now().minusDays(7);
+        LocalDateTime to = LocalDateTime.now();
+
+        when(userRepository.findByEmail("test@test.com"))
+                .thenReturn(Optional.of(user));
+
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
+                .thenReturn(Optional.of(account));
+
+        when(transactionRepository.findAll(
+                any(Specification.class),
+                any(Pageable.class)))
+                .thenReturn(Page.empty());
+
+        transactionService.getTransactions(
+                1L,
+                "test@test.com",
+                0,
+                10,
+                null,
+                from,
+                to
+        );
+
+        verify(transactionRepository).findAll(
+                any(Specification.class),
+                any(Pageable.class)
+        );
     }
 
 }

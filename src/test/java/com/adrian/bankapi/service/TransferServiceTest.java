@@ -66,10 +66,10 @@ class TransferServiceTest {
         when(userRepository.findByEmail(email))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(fromAccount));
 
-        when(bankAccountRepository.findById(2L))
+        when(bankAccountRepository.findByIdAndActiveTrue(2L))
                 .thenReturn(Optional.of(toAccount));
 
         when(bankAccountRepository.save(any(BankAccount.class)))
@@ -117,7 +117,7 @@ class TransferServiceTest {
                 () -> transferService.transfer(request, "test@test.com")
         );
 
-        verify(bankAccountRepository, never()).findById(anyLong());
+        verify(bankAccountRepository, never()).findByIdAndActiveTrue(anyLong());
         verify(transactionRepository, never()).save(any());
     }
 
@@ -147,10 +147,10 @@ class TransferServiceTest {
         when(userRepository.findByEmail(email))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(fromAccount));
 
-        when(bankAccountRepository.findById(2L))
+        when(bankAccountRepository.findByIdAndActiveTrue(2L))
                 .thenReturn(Optional.of(toAccount));
 
         assertThrows(
@@ -192,10 +192,10 @@ class TransferServiceTest {
         when(userRepository.findByEmail(email))
                 .thenReturn(Optional.of(loggedUser));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(fromAccount));
 
-        when(bankAccountRepository.findById(2L))
+        when(bankAccountRepository.findByIdAndActiveTrue(2L))
                 .thenReturn(Optional.of(toAccount));
 
         assertThrows(
@@ -224,7 +224,7 @@ class TransferServiceTest {
         when(userRepository.findByEmail(email))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -257,10 +257,10 @@ class TransferServiceTest {
         when(userRepository.findByEmail(email))
                 .thenReturn(Optional.of(user));
 
-        when(bankAccountRepository.findById(1L))
+        when(bankAccountRepository.findByIdAndActiveTrue(1L))
                 .thenReturn(Optional.of(fromAccount));
 
-        when(bankAccountRepository.findById(2L))
+        when(bankAccountRepository.findByIdAndActiveTrue(2L))
                 .thenReturn(Optional.empty());
 
         assertThrows(

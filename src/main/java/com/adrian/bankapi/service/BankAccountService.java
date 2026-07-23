@@ -48,9 +48,8 @@ public class BankAccountService {
 
     public BankAccountResponse getAccountById(Long id, String email) {
 
-        System.out.println("=== SERVICE getAccountById ===");
 
-        BankAccount account = bankAccountRepository.findById(id)
+        BankAccount account = bankAccountRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new BankAccountNotFoundException("Cuenta no encontrada"));
 
         User user = userRepository.findByEmail(email)
@@ -68,7 +67,7 @@ public class BankAccountService {
             DepositRequest request,
             String email) {
 
-        BankAccount account = bankAccountRepository.findById(id)
+        BankAccount account = bankAccountRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new BankAccountNotFoundException("Cuenta no encontrada"));
 
         User user = userRepository.findByEmail(email)
@@ -102,7 +101,7 @@ public class BankAccountService {
             WithdrawRequest request,
             String email) {
 
-        BankAccount account = bankAccountRepository.findById(id)
+        BankAccount account = bankAccountRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() ->
                         new BankAccountNotFoundException("Cuenta no encontrada"));
 
@@ -145,7 +144,7 @@ public class BankAccountService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
-        List<BankAccount> accounts = bankAccountRepository.findByUser(user);
+        List<BankAccount> accounts = bankAccountRepository.findByUserAndActiveTrue(user);
 
         return accounts.stream()
                 .map(this::mapToResponse)
@@ -166,6 +165,8 @@ public class BankAccountService {
         account.setAccountType(request.getAccountType());
         account.setCreatedAt(LocalDateTime.now());
         account.setUser(user);
+        account.setActive(true);
+        
         BankAccount savedAccount = bankAccountRepository.save(account);
 
         return mapToResponse(savedAccount);
@@ -198,4 +199,25 @@ public class BankAccountService {
 
         return response;
     }
+
+    public void deleteAccount(Long id, String email) {
+
+        BankAccount account = bankAccountRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() ->
+                        new BankAccountNotFoundException("Cuenta no encontrada"));
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UserNotFoundException("Usuario no encontrado"));
+
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedAccountAccessException(
+                    "No tienes acceso a esta cuenta");
+        }
+
+        account.setActive(false);
+
+        bankAccountRepository.save(account);
+    }
+
 }

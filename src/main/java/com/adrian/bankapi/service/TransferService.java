@@ -56,11 +56,11 @@ public class TransferService {
                 .orElseThrow(() ->
                         new UserNotFoundException("Usuario no encontrado"));
 
-        BankAccount fromAccount = bankAccountRepository.findById(request.getFromAccountId())
+        BankAccount fromAccount = bankAccountRepository.findByIdAndActiveTrue(request.getFromAccountId())
                 .orElseThrow(() ->
                         new BankAccountNotFoundException("Cuenta origen no encontrada"));
 
-        BankAccount toAccount = bankAccountRepository.findById(request.getToAccountId())
+        BankAccount toAccount = bankAccountRepository.findByIdAndActiveTrue(request.getToAccountId())
                 .orElseThrow(() ->
                         new BankAccountNotFoundException("Cuenta destino no encontrada"));
 

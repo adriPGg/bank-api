@@ -58,7 +58,7 @@ public class TransactionService {
                 .orElseThrow(() ->
                         new UserNotFoundException("Usuario no encontrado"));
 
-        List<BankAccount> accounts = bankAccountRepository.findByUser(user);
+        List<BankAccount> accounts = bankAccountRepository.findByUserAndActiveTrue(user);
 
         Pageable pageable = PageRequest.of(
                 page,
